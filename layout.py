@@ -1,6 +1,6 @@
 # layout.py
 
-from game import Info, Intersection, Crossroad
+from game import Info, Intersection, Crossroad, Road
 import os
 
 class Layout:
@@ -24,13 +24,13 @@ class Layout:
         """
 
         self.parseMap(layoutText)
-        self.parseRoad(layoutText)
+        self.parseMap2(layoutText)
 
     def parseMap(self, layoutText):
         for y in range(self.height):
             for x in range(self.width):
                 layoutChar = layoutText[y][x]
-                if (not self.mapInfo.get(x, y) is None): continue
+                if not (self.mapInfo.get(x, y) is None): continue
                 if layoutChar == '%':
                     self.mapInfo.setField(x, y)
                 elif layoutChar == 'I':
@@ -47,7 +47,7 @@ class Layout:
         positions = [(x, y)]
         for (nextX, nextY) in self.getPosNearBy(x, y):
             if layoutText[nextY][nextX] != 'I': continue
-            if (not self.mapInfo.get(nextX, nextY) is None): continue
+            if not (self.mapInfo.get(nextX, nextY) is None): continue
             positions.extend(self.parseIntersection(layoutText, nextX, nextY, number))
         return positions
 
@@ -56,23 +56,53 @@ class Layout:
         positions = [(x, y)]
         for (nextX, nextY) in self.getPosNearBy(x, y):
             if layoutText[nextY][nextX] != 'C': continue
-            if (not self.mapInfo.get(nextX, nextY) is None): continue
+            if not (self.mapInfo.get(nextX, nextY) is None): continue
             positions.extend(self.parseCrossroad(layoutText, nextX, nextY, number))
         return positions
 
-    def parseRoad(self, layoutText):
-        pass
+    def parseMap2(self, layoutText):
+        for node in self.intersections + self.crossroads:
+            for pos in node.getPostions():
+                for (nextX, nextY) in self.getPosNearBy(pos[0], pos[1]):
+                    if not (self.mapInfo.get(nextX, nextY) is None): continue
+                    (testX, testY) = self.getNextPos(nextX, nextY, layoutText[nextY][nextX])
+                    if not (testX == pos[0] and testY == pos[1]):
+                        number = len(self.roads)
+                        positions = self.parseRoad(layoutText, nextX, nextY, number)
+                        start = self.mapInfo.get(pos[0], pos[1])
+                        end = positions.pop()
+                        self.roads.append(Road(number, positions, start, end))
+
+    def parseRoad(self, layoutText, x, y, number):
+        self.mapInfo.setRoad(x, y, number)
+        positions = [(x, y)]
+        (nextX, nextY) = self.getNextPos(x, y, layoutText[y][x])
+        posInfo =  self.mapInfo.get(nextX, nextY)
+        if posInfo is None:
+            positions.extend(self.parseRoad(layoutText, nextX, nextY, number))
+        else:
+            positions.append(posInfo)
+        return positions
 
     def getPosNearBy(self, x, y):
-        position = []
+        positions = []
         move = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         for m in move:
             nextX = x + m[0]
             nextY = y + m[1]
             if 0 <= nextX < self.width and 0 <= nextY < self.height:
-                position.append((nextX, nextY))
-        return position
+                positions.append((nextX, nextY))
+        return positions
 
+    def getNextPos(self, x, y, direction):
+        if direction == 'N':
+            return (x, y - 1)
+        elif direction == 'S':
+            return (x, y + 1)
+        elif direction == 'E':
+            return (x + 1, y)
+        elif direction == 'W':
+            return (x - 1, y)
 
 # Call by Game?
 def getLayout(name, back=2):
@@ -90,7 +120,7 @@ def getLayout(name, back=2):
     return layout
 
 def tryToLoad(fullname):
-    if (not os.path.exists(fullname)): return None
+    if not os.path.exists(fullname): return None
     f = open(fullname)
     try: return Layout([line.strip() for line in f])
     finally: f.close()
@@ -103,3 +133,8 @@ if __name__ == '__main__':
     print('intersections')
     for i in l.intersections:
         print(i.getPostions())
+    print('roads')
+    for r in l.roads:
+        print(r.getPostions())
+        print(r.getStart())
+        print(r.getEnd())

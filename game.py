@@ -27,8 +27,8 @@ class Info:
     def setCrossroad(self, x, y, number):
         self.data[x][y] = (self.CROSSROAD, number)
 
-    def setRoad(self, x, y):
-        pass
+    def setRoad(self, x, y, number):
+        self.data[x][y] = (self.ROAD, number)
 
 class Intersection:
     """
@@ -42,6 +42,12 @@ class Intersection:
     def getPostions(self):
         return self.positions
 
+    def addInRoad(self):
+        pass
+
+    def addOutRoad(self):
+        pass
+
 class Crossroad:
     """
     A crossroad in the map.
@@ -53,3 +59,32 @@ class Crossroad:
 
     def getPostions(self):
         return self.positions
+
+    def addInRoad(self):
+        pass
+
+    def addOutRoad(self):
+        pass
+
+class Road:
+    """
+    A road in the map.
+    """
+
+    def __init__(self, number, positions, start, end):
+        self.number = number
+        self.positions = positions
+        self.start = start
+        self.end = end
+
+    def getPostions(self):
+        return self.positions
+
+    def getStart(self):
+        return self.start
+
+    def getEnd(self):
+        return self.end
+
+    def getDistance(self):
+        return len(self.positions)
