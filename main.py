@@ -3,6 +3,7 @@
 import sys
 from optparse import OptionParser
 from thread import start_new_thread
+from random import randint
 from layout import getLayout
 from car import CarMap
 from graphic import Graphic
@@ -33,6 +34,26 @@ def parseArgs(argv):
 
 def run():
     print(simulation.run(args['display'], 0.2))
+    app.quit()
+
+def randomStartEndPoint(number=5):
+    pos = {}
+    for _ in range(number):
+        while True:
+            r = randint(0, len(carmap.roads) - 1)
+            i = randint(0, carmap.roads[r].getDistance() - 1)
+            if not (r, i) in pos:
+                pos[(r, i)] = carmap.roads[r].getPosByIndex(i)
+                break
+    result = []
+    for (ri, p) in pos.iteritems():
+        while True:
+            r = randint(0, len(carmap.roads) - 1)
+            i = randint(0, carmap.roads[r].getDistance() - 1)
+            if ri != (r, i):
+                result.append((p, carmap.roads[r].getPosByIndex(i)))
+                break
+    return result
 
 if __name__ == '__main__':
     """
@@ -45,7 +66,8 @@ if __name__ == '__main__':
     print(gene.geneStr)
     geneInfo = GeneInfo(gene)
     carmap = CarMap(mapLayout, geneInfo)
-    simulation = Simulation([((7, 4), (10, 4)), ((6, 4), (10, 4)), ((21, 17), (21, 25)), ((5, 5), (25, 12))], carmap)
+    cars = randomStartEndPoint(40)
+    simulation = Simulation(cars, carmap)
     app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights, 20)
 
     if args['display'] is True:

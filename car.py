@@ -153,7 +153,7 @@ class CarMap(object):
         road = self.roads[r]
         if road.getDistance() != i + 1:
             return (self.NOT_AT_THE_END_OF_ROAD)
-        if not self.geneInfo.isGreen(r, tick):
+        if road.getEnd()[0] == Info.INTERSECTION and not self.geneInfo.isGreen(r, tick):
             return (self.BLOCKED_BY_TRAFFIC_LIGHT)
         if self.data[roadNumber][0] is not None:
             return (self.BLOCKED_BY_OTHER_CAR, self.data[roadNumber][0].number)
@@ -184,5 +184,5 @@ class CarMap(object):
 
 if __name__ == '__main__':
     cm = CarMap('face')
-    print(cm.initialCars([(4, 5), (4, 5)]))
-    print(cm.getDirection((4, 5), (21, 19)))
+    # print(cm.initialCars([(4, 5), (4, 5)]))
+    print(cm.getDirection((16, 12), (30, 12)))

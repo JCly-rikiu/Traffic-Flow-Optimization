@@ -17,7 +17,7 @@ class Car(object):
         return self.stepLeft == 0
 
     def nextRoad(self):
-        if self.dirs[0][1] == 1 and self.stepLeft != 1:
+        if self.dirs[0][1] == 1 and len(self.dirs) != 1:
             return self.dirs[1][0] # id of next new road
         return -1 # no need to change road
 
