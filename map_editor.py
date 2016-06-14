@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-from random import randint
+import sys
 
 class App:
     def __init__(self, master):
@@ -17,6 +17,13 @@ class App:
         self.gridSize = 20
         self.WID = 400
         self.HEI = 300
+
+        if len(sys.argv) > 1:
+            geoStr = sys.argv[1]
+            geoStr_splited = geoStr.split("x")
+            self.WID = int(geoStr_splited[0])
+            self.HEI = int(geoStr_splited[1])
+
         self.vGrid = self.HEI / self.gridSize
         self.hGrid = self.WID / self.gridSize
 
@@ -25,7 +32,7 @@ class App:
         self.canvas.bind("<Button-1>", self.changeGridColor)
         self.canvas.pack()
 
-        self.grids = [[0 for __ in range(self.hGrid)] for _ in range(self.vGrid)]
+        self.grids = [[0 for _ in range(self.hGrid)] for _ in range(self.vGrid)]
         self.drawGrid()
 
         self.colorToDraw = "#333"
@@ -50,7 +57,6 @@ class App:
             self.colorToDraw = "#333"
 
     def changeGridColor(self, event):
-        # print "Click at", event.x, event.y
         gLen = self.gridSize
         x = int(event.x / gLen)
         y = int(event.y / gLen)
@@ -82,7 +88,7 @@ class App:
         # dictionary for road
         roadDict = {}
         roadType = ""
-        
+
         # road end
         roadDict["0001"] = "SNCC"
         roadDict["0010"] = "WCEC"
@@ -122,6 +128,6 @@ class App:
 
 if __name__ == '__main__':
     root = Tk()
-    root.title("test.py")
+    root.title("Map Editor v1.0")
     app = App(root)
     root.mainloop()
