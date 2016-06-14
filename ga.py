@@ -3,22 +3,25 @@
 from random import randint
 
 class Gene:
-    def __init__(self, trafficInfo, randomGenerate=True):
+    def __init__(self, trafficInfo, randomGenerate=True, geneStr=""):
         self.geneStr = ""
         self.geneLen = 0
+        self.trafficInfo = trafficInfo
         self.matched = {}
         self.roadToLight = {}
         self.roadInfo = {}
         self.lightInfo = {}
         if randomGenerate:
-            self.buildUpGene(trafficInfo)
+            self.buildUpGene()
+        else:
+            self.buildFromStr(geneStr)
 
-    def buildUpGene(self, trafficInfo):
-        for trafficLight, intersections in trafficInfo:
+    def buildUpGene(self):
+        for trafficLight, intersections in self.trafficInfo:
             self.geneLen += len(intersections)
             lightlist = []
             for _ in range(len(intersections)):
-                duration = randint(1, 10)
+                duration = randint(2, 10)
                 lightlist.append(duration)
                 self.geneStr += "{0:02d}".format(duration)
 
@@ -27,8 +30,21 @@ class Gene:
             for road in intersections:
                 self.roadToLight[road] = trafficLight
 
-# trafficInfo is look like:
-#   [(0, [2, 4, 6, 8]), (1, [1, 3, 5, 7])]
+    def buildFromStr(self, geneStr):
+        index = 0
+        self.geneStr = geneStr
+        for trafficLight, intersections in self.trafficInfo:
+            self.geneLen += len(intersections)
+            lightlist = []
+            for _ in range(len(intersections)):
+                duration = int(geneStr[i*2 : i*2 + 2])
+                lightlist.append(duration)
+                index += 1
+
+            self.lightInfo[trafficLight] = lightlist
+            self.roadInfo[trafficLight] = intersections
+            for road in intersections:
+                self.roadToLight[road] = trafficLight
 
 class GeneInfo:
     def __init__(self, gene):
@@ -49,5 +65,23 @@ class GeneInfo:
                 return False
         return False
 
+class GeneEvolve:
+    @classmethod
+    def evolve(cls, g1, g2):
+        newGen = cls.merge(g1, g2)
+        geneStr = cls.mutate(newGen)
+        return Gene(g1.trafficInfo, False, geneStr)
 
-# trafficInfo = [(0, [2, 4, 6, 8]), (1, [1, 3, 5, 7])]
+    def merge(cls, g1, g2):
+        newGen = ""
+        genLen = len(g1.geneStr)
+        geneStr = [g1.geneStr, g2.geneStr]
+        for i in range( len(gs1)/2 ):
+            newGen += geneStr[randint(0,1)][i*2 : i*2 + 2]
+        return newGen
+
+    def mutate(cls, geneStr):
+        for i in randint(0, 2):
+            pos = randint(0, len(geneStr)/2)
+            geneStr = geneStr[: pos*2] + "{0:02d}".format(randint(2,10)) + geneStr[pos*2+2 :]
+        return geneStr
