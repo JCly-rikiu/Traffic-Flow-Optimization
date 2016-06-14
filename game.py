@@ -92,6 +92,7 @@ class Road(object):
         self.positions = positions
         self.start = start
         self.end = end
+        self.distance = len(positions)
 
     def getPostions(self):
         return self.positions
@@ -103,4 +104,12 @@ class Road(object):
         return self.end
 
     def getDistance(self):
-        return len(self.positions)
+        return self.distance
+
+    def getIndexOfRoad(self, pos):
+        return self.positions.index(pos)
+
+    def getPosByIndex(self, index):
+        if index < 0 or index >= self.distance:
+            return None
+        return self.positions[index]
