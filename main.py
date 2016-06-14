@@ -7,6 +7,7 @@ from layout import getLayout
 from car import CarMap
 from graphic import Graphic
 from simulate import Simulation
+from ga import Gene, GeneInfo
 
 def parseArgs(argv):
     """
@@ -39,9 +40,12 @@ if __name__ == '__main__':
     """
 
     args = parseArgs(sys.argv[1:])
-    carmap = CarMap(args['layout'])
+    mapLayout = args['layout']
+    gene = Gene(mapLayout.getTrafficLights())
+    geneInfo = GeneInfo(gene)
+    carmap = CarMap(mapLayout, geneInfo)
     simulation = Simulation([((7, 4), (10, 4)), ((6, 4), (10, 4)), ((21, 17), (21, 25)), ((5, 5), (25, 12))], carmap)
-    app = Graphic(args['layout'].mapInfo, carmap.cars)
+    app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights)
 
     if args['display'] is True:
         start_new_thread(run, ())

@@ -4,6 +4,19 @@ import Queue
 from layout import getLayout
 from game import Info
 
+class TrafficLight(object):
+    """
+    A traffic light in the map.
+    """
+
+    def __init__(self, number, pos):
+        self.number = number
+        self.pos = pos
+        self.isGreen = False
+
+    def update(self, isGreen):
+        self.isGreen = isGreen
+
 class Car(object):
     """
     A car in the map.
@@ -29,7 +42,7 @@ class CarMap(object):
     NOT_SELECT_ROAD = 'not select road'
     NOT_AT_THE_END_OF_ROAD = 'not at the end of road'
 
-    def __init__(self, mapLayout):
+    def __init__(self, mapLayout, geneInfo):
         if type(mapLayout) == str:
             mapLayout = getLayout(mapLayout)
         self.mapInfo = mapLayout.mapInfo
@@ -37,7 +50,9 @@ class CarMap(object):
         self.crossroads = mapLayout.crossroads
         self.roads = mapLayout.roads
         self.cars = []
-        # self.trafficlight = TrafficLight
+        self.trafficlights = []
+        self.geneInfo = geneInfo
+        self.initialTrafficLights()
         self.data = [[None for _ in range(r.getDistance())] for r in self.roads]
 
     def initialCars(self, cars):
@@ -136,9 +151,8 @@ class CarMap(object):
         road = self.roads[r]
         if road.getDistance() != i + 1:
             return (self.NOT_AT_THE_END_OF_ROAD)
-        # TODO Traffic light
-        #
-        #   return (self.BLOCKED_BY_TRAFFIC_LIGHT)
+        if not self.geneInfo.isGreen(r, tick):
+            return (self.BLOCKED_BY_TRAFFIC_LIGHT)
         if self.data[roadNumber][0] is not None:
             return (self.BLOCKED_BY_OTHER_CAR, self.data[roadNumber][0].number)
         pos = self.roads[roadNumber].getPosByIndex(0)
@@ -153,6 +167,17 @@ class CarMap(object):
         car.noDisplay()
         (r, i) = car.roadIndex
         self.data[r][i] = None
+
+    def initialTrafficLights(self):
+        for i in self.intersections:
+            for r in i.getInRoads():
+                road = self.roads[r]
+                pos = road.positions[-1]
+                self.trafficlights.append(TrafficLight(r, pos))
+
+    def updateTrafficLights(self, tick):
+        for tl in self.trafficlights:
+            tl.update(self.geneInfo(tl.number, tick))
 
 if __name__ == '__main__':
     cm = CarMap('face')
