@@ -72,7 +72,7 @@ class Graphic():
         for light in self.trafficlights:
             x, y = light.pos
             pos_x = x * gridsize
-            pos_y = y * girdsize
+            pos_y = y * gridsize
             colorToDraw = "#f00"
             if light.isGreen:
                 colorToDraw = "#0c0"
