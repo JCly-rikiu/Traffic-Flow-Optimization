@@ -115,6 +115,9 @@ class Layout(object):
         elif direction == 'W':
             return (x - 1, y)
 
+    def getTrafficLights(self):
+        return [(i.number, i.getInRoads()) for i in self.intersections]
+
 # Call by Game?
 def getLayout(name, back=2):
     if name.endswith('.lay'):
@@ -137,16 +140,17 @@ def tryToLoad(fullname):
     finally: f.close()
 
 if __name__ == '__main__':
-    l = getLayout('test')
-    print('crossroads')
-    for c in l.crossroads:
-        print(c.getPostions())
-    print('intersections')
-    for i in l.intersections:
-        print(i.getPostions())
-        print(i.getOutRoads())
-    print('roads')
-    for r in l.roads:
-        print(r.getPostions())
+    l = getLayout('double_cross')
+    # print('crossroads')
+    # for c in l.crossroads:
+    #     print(c.getPostions())
+    # print('intersections')
+    # for it in l.intersections:
+    #     print(it.getPostions())
+    #     print(it.getOutRoads())
+    # print('roads')
+    # for r in l.roads:
+    #     print(r.getPostions())
         # print(r.getStart())
         # print(r.getEnd())
+    print(l.getTrafficLights())
