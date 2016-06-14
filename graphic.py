@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-from time import sleep
-from thread import start_new_thread
-from layout import getLayout
-from car import CarMap
 from game import Info
 
 class Grid:
@@ -25,12 +21,13 @@ class Grid:
                 elif dataType == Info.ROAD:
                     self.data[x][y] = 1
 
-class Graphic:
-    def __init__(self, master, grid, carList, carmap, gridsize=10):
-        self.master = master
-        self.frame1 = Frame(master)
+class Graphic():
+    def __init__(self, grid, carList, gridsize=10):
+        self.master = Tk()
+        self.master.title("Traffic Flow Optimization")
+        self.frame1 = Frame(self.master)
         self.frame1.pack()
-        self.frame2 = Frame(master)
+        self.frame2 = Frame(self.master)
         self.frame2.pack()
 
         # real grid size = 10
@@ -39,7 +36,6 @@ class Graphic:
         self.width = grid.wid * gridsize
         self.height = grid.hei * gridsize
         self.cars = carList
-        self.carmap = carmap
 
         self.canvas = Canvas(self.frame1, width=self.width, height=self.height)
         self.canvas.pack()
@@ -50,7 +46,9 @@ class Graphic:
 
         self.carItem = []
         self.frame1.after(100, self.drawCars)
-        self.frame1.after(200, self.moveCar)
+
+    def run(self):
+        self.master.mainloop()
 
     def drawRoadAndBuilding(self, grid):
         gridsize = self.gridSize
@@ -78,22 +76,6 @@ class Graphic:
 
         self.frame1.after(100, self.drawCars)
 
-    def moveCar(self):
-        self.carmap.move(0)
-        self.frame1.after(200, self.moveCar)
-
     def quit(self):
         print "Program End!"
         self.master.destroy()
-
-
-if __name__ == '__main__':
-    root = Tk()
-    root.title("Traffic Flow Optimization")
-
-    lay = getLayout("face")
-    grid = Grid(lay.mapInfo)
-    carmap = CarMap(lay)
-    carmap.initialCars([(7,4)])
-    app = Graphic(root, grid, carmap.cars, carmap)
-    root.mainloop()
