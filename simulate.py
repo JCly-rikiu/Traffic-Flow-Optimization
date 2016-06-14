@@ -29,9 +29,9 @@ class Car(object):
 
 class Simulation(object):
 
-    def __init__(self, startEndList, layout):
+    def __init__(self, startEndList, carMap):
         self.carN = len(startEndList)
-        self.cm = CarMap(layout)
+        self.cm = carMap
         self.cm.initialCars([startEndList[i][0] for i in range(self.carN)])
         self.cars = []
         for i in range(self.carN):
