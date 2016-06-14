@@ -7,33 +7,47 @@ class Gene:
         self.geneStr = ""
         self.geneLen = 0
         self.matched = {}
+        self.roadToLight = {}
+        self.roadInfo = {}
+        self.lightInfo = {}
         if randomGenerate:
             self.buildUpGene(trafficInfo)
 
     def buildUpGene(self, trafficInfo):
-        matchedIndex = 0
         for trafficLight, intersections in trafficInfo:
             self.geneLen += len(intersections)
+            lightlist = []
             for _ in range(len(intersections)):
-                self.geneStr += "{0:02d}".format(randint(1, 10))
+                duration = randint(1, 10)
+                lightlist.append(duration)
+                self.geneStr += "{0:02d}".format(duration)
+
+            self.lightInfo[trafficLight] = lightlist
+            self.roadInfo[trafficLight] = intersections
             for road in intersections:
-                self.matched[road] = matchedIndex
-                matchedIndex += 1
+                self.roadToLight[road] = trafficLight
 
-    def getUnitTime(self, road):
-        pos = self.matched[road]
-        return int(self.geneStr[pos*2 : pos*2+2])
+# trafficInfo is look like:
+#   [(0, [2, 4, 6, 8]), (1, [1, 3, 5, 7])]
 
-trafficInfo = [(0, [2, 4, 6, 8]), (1, [1, 3, 5, 7])]
-g = Gene(trafficInfo)
-print "geneLen =", g.geneLen
-print "geneStr =", g.geneStr
+class GeneInfo:
+    def __init__(self, gene):
+        self.gene = gene
 
-print g.getUnitTime(1)
-print g.getUnitTime(2)
-print g.getUnitTime(3)
-print g.getUnitTime(4)
-print g.getUnitTime(5)
-print g.getUnitTime(6)
-print g.getUnitTime(7)
-print g.getUnitTime(8)
+    def isGreen(self, road, tick):
+        intersection = self.gene.roadToLight[road]
+        roadlist = self.gene.roadInfo[intersection]
+        lightlist = self.gene.lightInfo[intersection]
+        cycle = sum(lightlist)
+        tick = tick % cycle
+        for i in range(len(roadlist)):
+            if tick > lightlist[i]:
+                tick -= lightlist[i]
+            elif road == roadlist[i]:
+                return True
+            else:
+                return False
+        return False
+
+
+# trafficInfo = [(0, [2, 4, 6, 8]), (1, [1, 3, 5, 7])]
