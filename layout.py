@@ -72,6 +72,7 @@ class Layout:
                         start = self.mapInfo.get(pos[0], pos[1])
                         end = positions.pop()
                         self.roads.append(Road(number, positions, start, end))
+                        self.setInOutRoad(number, start, end)
 
     def parseRoad(self, layoutText, x, y, number):
         self.mapInfo.setRoad(x, y, number)
@@ -83,6 +84,16 @@ class Layout:
         else:
             positions.append(posInfo)
         return positions
+
+    def setInOutRoad(self, number, start, end):
+        if start[0] == Info.INTERSECTION:
+            self.intersections[start[1]].addOutRoad(number)
+        elif start[0] == Info.CROSSROAD:
+            self.crossroads[start[1]].addOutRoad(number)
+        if end[0] == Info.INTERSECTION:
+            self.intersections[end[1]].addInRoad(number)
+        elif end[0] == Info.CROSSROAD:
+            self.crossroads[end[1]].addInRoad(number)
 
     def getPosNearBy(self, x, y):
         positions = []
@@ -133,8 +144,9 @@ if __name__ == '__main__':
     print('intersections')
     for i in l.intersections:
         print(i.getPostions())
+        print(i.getOutRoads())
     print('roads')
     for r in l.roads:
         print(r.getPostions())
-        print(r.getStart())
-        print(r.getEnd())
+        # print(r.getStart())
+        # print(r.getEnd())

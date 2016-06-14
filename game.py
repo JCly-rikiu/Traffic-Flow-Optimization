@@ -38,15 +38,23 @@ class Intersection:
     def __init__(self, number, positions):
         self.number = number
         self.positions = positions
+        self.inRoads = []
+        self.outRoads = []
 
     def getPostions(self):
         return self.positions
 
-    def addInRoad(self):
-        pass
+    def addInRoad(self, number):
+        self.inRoads.append(number)
 
-    def addOutRoad(self):
-        pass
+    def addOutRoad(self, number):
+        self.outRoads.append(number)
+
+    def getInRoads(self):
+        return self.inRoads
+
+    def getOutRoads(self):
+        return self.outRoads
 
 class Crossroad:
     """
@@ -56,15 +64,23 @@ class Crossroad:
     def __init__(self, number, positions):
         self.number = number
         self.positions = positions
+        self.inRoads = []
+        self.outRoads = []
 
     def getPostions(self):
         return self.positions
 
-    def addInRoad(self):
-        pass
+    def addInRoad(self, number):
+        self.inRoads.append(number)
 
-    def addOutRoad(self):
-        pass
+    def addOutRoad(self, number):
+        self.outRoads.append(number)
+
+    def getInRoads(self):
+        return self.inRoads
+
+    def getOutRoads(self):
+        return self.outRoads
 
 class Road:
     """
