@@ -66,6 +66,8 @@ class Graphic():
             self.canvas.delete(item)
         self.carItem = []
         for car in self.cars:
+            if car.display == False:
+                continue
             x, y = car.pos
             pos_x = x * gridsize
             pos_y = y * gridsize
