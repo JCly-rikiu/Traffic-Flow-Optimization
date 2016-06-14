@@ -42,7 +42,9 @@ class CarMap(object):
     def initialCars(self, cars):
         for c in cars:
             (x, y) = c
-            (r, i) = self.getRoadIndex(x, y)
+            roadIndex = self.getRoadIndex(x, y)
+            if roadIndex is None: return False
+            (r, i) = roadIndex
             if self.data[r][i] is not None: return False
             number = len(self.cars)
             car = Car(number, c, (r, i))
@@ -152,6 +154,6 @@ class CarMap(object):
         self.data[r][i] = None
 
 if __name__ == '__main__':
-    cm = CarMap('test')
-    cm.initialCars([(2, 3), (3, 3)])
-    print(cm.getDirection((4, 4), (8, 4)))
+    cm = CarMap('face')
+    # print(cm.initialCars([(4, 5), (21, 19)]))
+    print(cm.getDirection((4, 5), (21, 19)))
