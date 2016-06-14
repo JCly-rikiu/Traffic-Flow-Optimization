@@ -1,9 +1,9 @@
 # layout.py
 
-from game import Info, Intersection, Crossroad, Road
 import os
+from game import Info, Intersection, Crossroad, Road
 
-class Layout:
+class Layout(object):
     """
     A Layout parse the map into Graph.
     """
@@ -23,69 +23,69 @@ class Layout:
         Parse all intersections and crossroads first, and then parse the roads in the map.
         """
 
-        self.parseMap(layoutText)
-        self.parseMap2(layoutText)
+        self.__parseMap(layoutText)
+        self.__parseMap2(layoutText)
 
-    def parseMap(self, layoutText):
+    def __parseMap(self, layoutText):
         for y in range(self.height):
             for x in range(self.width):
                 layoutChar = layoutText[y][x]
-                if not (self.mapInfo.get(x, y) is None): continue
+                if self.mapInfo.get(x, y) is not None: continue
                 if layoutChar == '%':
                     self.mapInfo.setField(x, y)
                 elif layoutChar == 'I':
                     number = len(self.intersections)
-                    positions = self.parseIntersection(layoutText, x, y, number)
+                    positions = self.__parseIntersection(layoutText, x, y, number)
                     self.intersections.append(Intersection(number, positions))
                 elif layoutChar == 'C':
                     number = len(self.crossroads)
-                    positions = self.parseCrossroad(layoutText, x, y, number)
+                    positions = self.__parseCrossroad(layoutText, x, y, number)
                     self.crossroads.append(Crossroad(number, positions))
 
-    def parseIntersection(self, layoutText, x, y, number):
+    def __parseIntersection(self, layoutText, x, y, number):
         self.mapInfo.setIntersection(x, y, number)
         positions = [(x, y)]
-        for (nextX, nextY) in self.getPosNearBy(x, y):
+        for (nextX, nextY) in self.__getPosNearBy(x, y):
             if layoutText[nextY][nextX] != 'I': continue
-            if not (self.mapInfo.get(nextX, nextY) is None): continue
-            positions.extend(self.parseIntersection(layoutText, nextX, nextY, number))
+            if self.mapInfo.get(nextX, nextY) is not None: continue
+            positions.extend(self.__parseIntersection(layoutText, nextX, nextY, number))
         return positions
 
-    def parseCrossroad(self, layoutText, x, y, number):
+    def __parseCrossroad(self, layoutText, x, y, number):
         self.mapInfo.setCrossroad(x, y, number)
         positions = [(x, y)]
-        for (nextX, nextY) in self.getPosNearBy(x, y):
+        for (nextX, nextY) in self.__getPosNearBy(x, y):
             if layoutText[nextY][nextX] != 'C': continue
-            if not (self.mapInfo.get(nextX, nextY) is None): continue
-            positions.extend(self.parseCrossroad(layoutText, nextX, nextY, number))
+            if self.mapInfo.get(nextX, nextY) is not None: continue
+            positions.extend(self.__parseCrossroad(layoutText, nextX, nextY, number))
         return positions
 
-    def parseMap2(self, layoutText):
+    def __parseMap2(self, layoutText):
         for node in self.intersections + self.crossroads:
             for pos in node.getPostions():
-                for (nextX, nextY) in self.getPosNearBy(pos[0], pos[1]):
-                    if not (self.mapInfo.get(nextX, nextY) is None): continue
-                    (testX, testY) = self.getNextPos(nextX, nextY, layoutText[nextY][nextX])
+                for (nextX, nextY) in self.__getPosNearBy(pos[0], pos[1]):
+                    if self.mapInfo.get(nextX, nextY) is not None: continue
+                    (testX, testY) = self.__getNextPos(nextX, nextY, layoutText[nextY][nextX])
                     if not (testX == pos[0] and testY == pos[1]):
                         number = len(self.roads)
-                        positions = self.parseRoad(layoutText, nextX, nextY, number)
+                        positions = self.__parseRoad(layoutText, nextX, nextY, number)
                         start = self.mapInfo.get(pos[0], pos[1])
                         end = positions.pop()
                         self.roads.append(Road(number, positions, start, end))
-                        self.setInOutRoad(number, start, end)
+                        self.__setInOutRoad(number, start, end)
 
-    def parseRoad(self, layoutText, x, y, number):
+    def __parseRoad(self, layoutText, x, y, number):
         self.mapInfo.setRoad(x, y, number)
         positions = [(x, y)]
-        (nextX, nextY) = self.getNextPos(x, y, layoutText[y][x])
-        posInfo =  self.mapInfo.get(nextX, nextY)
+        (nextX, nextY) = self.__getNextPos(x, y, layoutText[y][x])
+        posInfo = self.mapInfo.get(nextX, nextY)
         if posInfo is None:
-            positions.extend(self.parseRoad(layoutText, nextX, nextY, number))
+            positions.extend(self.__parseRoad(layoutText, nextX, nextY, number))
         else:
             positions.append(posInfo)
         return positions
 
-    def setInOutRoad(self, number, start, end):
+    def __setInOutRoad(self, number, start, end):
         if start[0] == Info.INTERSECTION:
             self.intersections[start[1]].addOutRoad(number)
         elif start[0] == Info.CROSSROAD:
@@ -95,7 +95,7 @@ class Layout:
         elif end[0] == Info.CROSSROAD:
             self.crossroads[end[1]].addInRoad(number)
 
-    def getPosNearBy(self, x, y):
+    def __getPosNearBy(self, x, y):
         positions = []
         move = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         for m in move:
@@ -105,7 +105,7 @@ class Layout:
                 positions.append((nextX, nextY))
         return positions
 
-    def getNextPos(self, x, y, direction):
+    def __getNextPos(self, x, y, direction):
         if direction == 'N':
             return (x, y - 1)
         elif direction == 'S':
@@ -123,7 +123,7 @@ def getLayout(name, back=2):
     else:
         layout = tryToLoad('layouts/' + name + '.lay')
         if layout is None: layout = tryToLoad(name + '.lay')
-    if layout == None and back >= 0:
+    if layout is None and back >= 0:
         curdir = os.path.abspath('.')
         os.chdir('..')
         layout = getLayout(name, back - 1)

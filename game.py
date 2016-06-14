@@ -1,6 +1,6 @@
 # game.py
 
-class Info:
+class Info(object):
     """
     A 2-dimensional array to store the map information.
     """
@@ -30,7 +30,7 @@ class Info:
     def setRoad(self, x, y, number):
         self.data[x][y] = (self.ROAD, number)
 
-class Intersection:
+class Intersection(object):
     """
     An intersecion in the map.
     """
@@ -56,7 +56,7 @@ class Intersection:
     def getOutRoads(self):
         return self.outRoads
 
-class Crossroad:
+class Crossroad(object):
     """
     A crossroad in the map.
     """
@@ -82,7 +82,7 @@ class Crossroad:
     def getOutRoads(self):
         return self.outRoads
 
-class Road:
+class Road(object):
     """
     A road in the map.
     """
