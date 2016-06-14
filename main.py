@@ -15,7 +15,7 @@ def parseArgs(argv):
 
     parser = OptionParser()
     parser.add_option('-l', '--layout', dest='layout', type='str', default='single_cross')
-    parser.add_option('--no_display', action='store_false', dest='display')
+    parser.add_option('--no_display', action='store_false', dest='display', default=True)
 
     (options, otherjunk) = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -30,6 +30,8 @@ def parseArgs(argv):
 
     return arguments
 
+def run():
+    print(simulation.run(args['display']))
 
 if __name__ == '__main__':
     """
@@ -38,9 +40,11 @@ if __name__ == '__main__':
 
     args = parseArgs(sys.argv[1:])
     carmap = CarMap(args['layout'])
-    simulation = Simulation([((7, 4), (10, 4)), ((6, 4), (10, 4))], carmap)
-    print(carmap.getDirection((7, 4), (10, 4)))
+    simulation = Simulation([((7, 4), (10, 4)), ((6, 4), (10, 4)), ((21, 17), (21, 25)), ((5, 5), (25, 12))], carmap)
     app = Graphic(args['layout'].mapInfo, carmap.cars)
 
-    start_new_thread(simulation.run, ())
-    app.run()
+    if args['display'] is True:
+        start_new_thread(run, ())
+        app.run()
+    else:
+        run()

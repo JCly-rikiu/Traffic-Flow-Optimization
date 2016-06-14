@@ -1,5 +1,6 @@
-# car.py
+# simulate.py
 
+from time import sleep
 from car import CarMap
 
 class Car(object):
@@ -39,16 +40,18 @@ class Simulation(object):
         self.carCnt = self.carN
         self.tick = 0
 
-    def run(self):
-        from time import sleep
+    def run(self, delay, sec=0.1):
         while self.carCnt:
-            sleep(0.1)
+            if delay: sleep(sec)
             self.tick += 1
             for i in range(self.carN):
                 self.moveCarRecursively(i)
         self.cm.clearAllCars()
+        total = 0
         for i in range(self.carN):
+            total += self.cars[i].timeStamp
             print "Car", i, "takes", self.cars[i].timeStamp, "ticks."
+        return (total, float(total) / self.carN)
 
     def makeAMove(self, i, nextRoad):
         if nextRoad == -1:
