@@ -68,22 +68,25 @@ class Layout(object):
                     (testX, testY) = self.__getNextPos(nextX, nextY, layoutText[nextY][nextX])
                     if not (testX == pos[0] and testY == pos[1]):
                         number = len(self.roads)
-                        positions = self.__parseRoad(layoutText, nextX, nextY, number)
+                        (positions, ways) = self.__parseRoad(layoutText, nextX, nextY, number)
                         start = self.mapInfo.get(pos[0], pos[1])
                         end = positions.pop()
-                        self.roads.append(Road(number, positions, start, end))
+                        self.roads.append(Road(number, positions, ways, start, end))
                         self.__setInOutRoad(number, start, end)
 
     def __parseRoad(self, layoutText, x, y, number):
         self.mapInfo.setRoad(x, y, number)
         positions = [(x, y)]
+        ways = [layoutText[y][x]]
         (nextX, nextY) = self.__getNextPos(x, y, layoutText[y][x])
         posInfo = self.mapInfo.get(nextX, nextY)
         if posInfo is None:
-            positions.extend(self.__parseRoad(layoutText, nextX, nextY, number))
+            (p, w) = self.__parseRoad(layoutText, nextX, nextY, number)
+            positions.extend(p)
+            ways.extend(w)
         else:
             positions.append(posInfo)
-        return positions
+        return (positions, ways)
 
     def __setInOutRoad(self, number, start, end):
         if start[0] == Info.INTERSECTION:

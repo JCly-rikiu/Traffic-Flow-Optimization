@@ -42,9 +42,9 @@ class Simulation(object):
 
     def run(self, delay, sec=0.1):
         while self.carCnt:
-            self.cm.updateTrafficLights(self.tick)
             if delay: sleep(sec)
             self.tick += 1
+            self.cm.updateTrafficLights(self.tick)
             for i in range(self.carN):
                 self.moveCarRecursively(i)
         self.cm.clearAllCars()

@@ -22,9 +22,10 @@ class Car(object):
     A car in the map.
     """
 
-    def __init__(self, number, pos, roadIndex):
+    def __init__(self, number, pos, way, roadIndex):
         self.number = number
         self.pos = pos
+        self.way = way
         self.roadIndex = roadIndex
         self.display = True
 
@@ -63,7 +64,7 @@ class CarMap(object):
             (r, i) = roadIndex
             if self.data[r][i] is not None: raise Exception('Position ' + str((x, y)) + ' has been occupied.')
             number = len(self.cars)
-            car = Car(number, c, (r, i))
+            car = Car(number, c, self.roads[r].getWayByIndex(i), (r, i))
             self.data[r][i] = car
             self.cars.append(car)
         return True
@@ -140,6 +141,7 @@ class CarMap(object):
         if self.data[r][i + 1] is not None:
             return (self.BLOCKED_BY_OTHER_CAR, self.data[r][i + 1].number)
         car.pos = pos
+        car.way = road.getWayByIndex(i + 1)
         car.roadIndex = (r, i + 1)
         self.data[r][i] = None
         self.data[r][i + 1] = car
@@ -155,12 +157,13 @@ class CarMap(object):
             return (self.BLOCKED_BY_TRAFFIC_LIGHT)
         if self.data[roadNumber][0] is not None:
             return (self.BLOCKED_BY_OTHER_CAR, self.data[roadNumber][0].number)
-        pos = self.roads[roadNumber].getPosByIndex(0)
-        car.pos = pos
+        road = self.roads[roadNumber]
+        car.pos = road.getPosByIndex(0)
+        car.way = road.getWayByIndex(0)
         car.roadIndex = (roadNumber, 0)
         self.data[r][i] = None
         self.data[roadNumber][0] = car
-        return (self.SUCCESS, pos)
+        return (self.SUCCESS, car.pos)
 
     def remove(self, number):
         car = self.cars[number]
@@ -177,7 +180,7 @@ class CarMap(object):
 
     def updateTrafficLights(self, tick):
         for tl in self.trafficlights:
-            tl.update(self.geneInfo(tl.number, tick))
+            tl.update(self.geneInfo.isGreen(tl.number, tick))
 
 if __name__ == '__main__':
     cm = CarMap('face')

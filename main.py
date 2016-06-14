@@ -32,7 +32,7 @@ def parseArgs(argv):
     return arguments
 
 def run():
-    print(simulation.run(args['display']))
+    print(simulation.run(args['display'], 0.2))
 
 if __name__ == '__main__':
     """
@@ -42,10 +42,11 @@ if __name__ == '__main__':
     args = parseArgs(sys.argv[1:])
     mapLayout = args['layout']
     gene = Gene(mapLayout.getTrafficLights())
+    print(gene.geneStr)
     geneInfo = GeneInfo(gene)
     carmap = CarMap(mapLayout, geneInfo)
     simulation = Simulation([((7, 4), (10, 4)), ((6, 4), (10, 4)), ((21, 17), (21, 25)), ((5, 5), (25, 12))], carmap)
-    app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights)
+    app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights, 20)
 
     if args['display'] is True:
         start_new_thread(run, ())

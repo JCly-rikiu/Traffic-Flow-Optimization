@@ -87,9 +87,10 @@ class Road(object):
     A road in the map.
     """
 
-    def __init__(self, number, positions, start, end):
+    def __init__(self, number, positions, ways, start, end):
         self.number = number
         self.positions = positions
+        self.ways = ways
         self.start = start
         self.end = end
         self.distance = len(positions)
@@ -113,3 +114,8 @@ class Road(object):
         if index < 0 or index >= self.distance:
             return None
         return self.positions[index]
+
+    def getWayByIndex(self, index):
+        if index < 0 or index >= self.distance:
+            return None
+        return self.ways[index]
