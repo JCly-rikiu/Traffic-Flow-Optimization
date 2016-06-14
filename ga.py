@@ -67,11 +67,12 @@ class GeneInfo:
 
 class GeneEvolve:
     @classmethod
-    def evolve(cls, g1, g2):
+    def evolve(cls, g1, g2, mutateRate=0.1):
         newGen = cls.merge(g1, g2)
-        geneStr = cls.mutate(newGen)
+        geneStr = cls.mutate(newGen, mutateRate)
         return Gene(g1.trafficInfo, False, geneStr)
 
+    @classmethod
     def merge(cls, g1, g2):
         newGen = ""
         genLen = len(g1.geneStr)
@@ -80,8 +81,9 @@ class GeneEvolve:
             newGen += geneStr[randint(0,1)][i*2 : i*2 + 2]
         return newGen
 
-    def mutate(cls, geneStr):
-        for i in randint(0, 2):
+    @classmethod
+    def mutate(cls, geneStr, mutateRate):
+        for i in randint(0, int(len(geneStr)/2 * mutateRate) ):
             pos = randint(0, len(geneStr)/2)
             geneStr = geneStr[: pos*2] + "{0:02d}".format(randint(2,10)) + geneStr[pos*2+2 :]
         return geneStr
