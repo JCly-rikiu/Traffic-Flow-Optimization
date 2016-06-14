@@ -140,7 +140,7 @@ class CarMap(object):
         #
         #   return (self.BLOCKED_BY_TRAFFIC_LIGHT)
         if self.data[roadNumber][0] is not None:
-            return (self.BLOCKED_BY_OTHER_CAR, self.data[r][i + 1].number)
+            return (self.BLOCKED_BY_OTHER_CAR, self.data[roadNumber][0].number)
         pos = self.roads[roadNumber].getPosByIndex(0)
         car.pos = pos
         car.roadIndex = (roadNumber, 0)
