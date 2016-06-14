@@ -53,7 +53,7 @@ class CarMap(object):
         return True
 
     def clearAllCars(self):
-        self.cars = []
+        del self.cars[:]
         self.data = [[None for _ in range(r.getDistance())] for r in self.roads]
 
     def getInfo(self, x, y):
@@ -111,7 +111,7 @@ class CarMap(object):
         direction.reverse()
         result = [(r, self.roads[r].getDistance()) for r in direction]
         result[0] = (result[0][0], result[0][1] - si)
-        result[-1] = (result[-1][1], ei)
+        result[-1] = (result[-1][0], ei)
         return (distance + ei - si, result)
 
     def move(self, number):

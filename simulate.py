@@ -17,7 +17,7 @@ class Car(object):
 
     def nextRoad(self):
         if self.dirs[0][1] == 1 and self.stepLeft != 1:
-            return self.dirs[0][0] # id of next new road
+            return self.dirs[1][0] # id of next new road
         return -1 # no need to change road
 
     def move(self):
@@ -40,7 +40,9 @@ class Simulation(object):
         self.tick = 0
 
     def run(self):
+        from time import sleep
         while self.carCnt:
+            sleep(0.1)
             self.tick += 1
             for i in range(self.carN):
                 self.moveCarRecursively(i)
