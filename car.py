@@ -13,9 +13,10 @@ class Car(object):
         self.number = number
         self.pos = pos
         self.roadIndex = roadIndex
+        self.display = True
 
-    def draw(self):
-        pass
+    def noDisplay(self):
+        self.display = False
 
 class CarMap(object):
     """
@@ -85,7 +86,6 @@ class CarMap(object):
                     distance = dist
                     break
             road = self.roads[number]
-            dist += road.getDistance()
             (nodeType, nodeNum) = road.getEnd()
             if nodeType == Info.INTERSECTION:
                 node = self.intersections[nodeNum]
@@ -94,7 +94,7 @@ class CarMap(object):
             for rn in node.getOutRoads():
                 if rn not in prev:
                     prev[rn] = number
-                    pq.put((dist, rn))
+                    pq.put((dist + self.roads[rn].getDistance(), rn))
 
         now = endRoad
         direction = [now]
@@ -110,9 +110,10 @@ class CarMap(object):
 
         direction.reverse()
         result = [(r, self.roads[r].getDistance()) for r in direction]
+        distance = distance + result[0][1] - si - result[-1][1] + ei
         result[0] = (result[0][0], result[0][1] - si)
         result[-1] = (result[-1][0], ei)
-        return (distance + ei - si, result)
+        return (distance, result)
 
     def move(self, number):
         car = self.cars[number]
@@ -127,7 +128,6 @@ class CarMap(object):
         car.roadIndex = (r, i + 1)
         self.data[r][i] = None
         self.data[r][i + 1] = car
-        car.draw()
         return (self.SUCCESS, pos)
 
     def moveTo(self, number, roadNumber, tick):
@@ -146,11 +146,11 @@ class CarMap(object):
         car.roadIndex = (roadNumber, 0)
         self.data[r][i] = None
         self.data[roadNumber][0] = car
-        car.draw()
         return (self.SUCCESS, pos)
 
     def remove(self, number):
         car = self.cars[number]
+        car.noDisplay()
         (r, i) = car.roadIndex
         self.data[r][i] = None
 
