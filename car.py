@@ -106,8 +106,10 @@ class CarMap(object):
             direction.append(now)
 
         direction.reverse()
-        print(si, ei, distance)
-        return (distance + ei - si, direction)
+        result = [(r, self.roads[r].getDistance()) for r in direction]
+        result[0] = (result[0][0], result[0][1] - si)
+        result[-1] = (result[-1][1], ei)
+        return (distance + ei - si, result)
 
     def move(self, number):
         car = self.cars[number]
