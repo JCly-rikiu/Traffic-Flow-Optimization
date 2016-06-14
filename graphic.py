@@ -4,7 +4,7 @@ from Tkinter import *
 from game import Info
 
 class Graphic():
-    def __init__(self, graphInfo, carList, gridsize=10):
+    def __init__(self, graphInfo, carList, trafficlightList, gridsize=10):
         self.master = Tk()
         self.master.title("Traffic Flow Optimization")
         self.frame1 = Frame(self.master)
@@ -20,6 +20,7 @@ class Graphic():
         self.width = wid * gridsize
         self.height = hei * gridsize
         self.cars = carList
+        self.trafficlights = trafficlightList
 
         self.canvas = Canvas(self.frame1, width=self.width, height=self.height)
         self.canvas.pack()
@@ -30,12 +31,12 @@ class Graphic():
         self.quitButton = Button(self.frame2, text="Quit", command=self.quit)
         self.quitButton.grid(row=0, column=0)
 
-        self.carItem = []
+        self.graphicItem = []
 
     def run(self, fps=10):
         self.fps = fps
         self.frameTime = 1000 / self.fps
-        self.frame1.after(self.frameTime, self.drawCars)
+        self.frame1.after(self.frameTime, self.updateElement)
         self.master.mainloop()
 
     def initDataFromInfo(self, graphInfo, data):
@@ -62,20 +63,30 @@ class Graphic():
                 else:
                     self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#333", width=0)
 
-    def drawCars(self):
+    def updateElement(self):
         gridsize = self.gridSize
-        for item in self.carItem:
+        for item in self.graphicItem:
             self.canvas.delete(item)
-        self.carItem = []
+        self.graphicItem = []
+
+        for light in self.trafficlights:
+            x, y = light.pos
+            pos_x = x * gridsize
+            pos_y = y * girdsize
+            colorToDraw = "#f00"
+            if light.isGreen:
+                colorToDraw = "#0c0"
+            self.graphicItem.append(self.canvas.create_rectangle(pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1, fill=colorToDraw))
+
         for car in self.cars:
             if car.display == False:
                 continue
             x, y = car.pos
             pos_x = x * gridsize
             pos_y = y * gridsize
-            self.carItem.append(self.canvas.create_oval(pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1, fill="#f96"))
+            self.graphicItem.append(self.canvas.create_oval(pos_x+2, pos_y+2, pos_x+gridsize-2, pos_y+gridsize-2, fill="#f96"))
 
-        self.frame1.after(self.frameTime, self.drawCars)
+        self.frame1.after(self.frameTime, self.updateElement)
 
     def quit(self):
         print "Program End!"
