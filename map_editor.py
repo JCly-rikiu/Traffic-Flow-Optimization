@@ -58,11 +58,16 @@ class App:
 
     def countNeighbors(self, stateGrids, i, j):
         count = 0
-        for pos in [(i-1,j), (i,j-1), (i+1,j), (i,j+1)]:
-            if pos[0] >= 0 and pos[0] <= len(stateGrids) and pos[1] >= 0 and pos[1] <= len(stateGrids[0]):
-                if stateGrids[pos[0]][pos[1]] != 0:
+        sideStr = ""
+        fourSide = [(i,j+1), (i+1,j), (i,j-1), (i-1,j)]
+        for x in range(4):
+            if 0 <= fourSide[x][0] <= len(stateGrids) and 0 <= fourSide[x][1] <= len(stateGrids[0]):
+                if stateGrids[ fourSide[x][0] ][ fourSide[x][1] ] != 0:
                     count += 1
-        return count
+                    sideStr += "1"
+                else:
+                    sideStr += "0"
+        return (count, sideStr)
 
     def saveGrid(self):
         stateGrids = [[0 for i in range(self.hGrid)] for j in range(self.vGrid)]
@@ -74,27 +79,44 @@ class App:
                 if fillColor == "#333":
                     stateGrids[i][j] = 1
 
+        # dictionary for road
+        roadDict = {}
+        roadType = ""
+        
+        # road end
+        roadDict["0001"] = "SNCC"
+        roadDict["0010"] = "WCEC"
+        roadDict["0100"] = "CCSN"
+        roadDict["1000"] = "CWCE"
+
+        # straight road
+        roadDict["1010"] = "WWEE"
+        roadDict["0101"] = "SNSN"
+
+        # L road
+        roadDict["1100"] = "SWSE"
+        roadDict["1001"] = "SNEE"
+        roadDict["0110"] = "WWSN"
+        roadDict["0011"] = "WNEN"
+
         for i in range(self.vGrid):
             for j in range(self.hGrid):
+                roadType = "%%%%"
                 if stateGrids[i][j] == 1:
-                    count = self.countNeighbors(stateGrids, i, j)
+                    count, sideStr = self.countNeighbors(stateGrids, i, j)
                     if count >= 3:
-                        stateGrids[i][j] = 3
-
-                realGrids[i*2][j*2] = stateGrids[i][j]
-                realGrids[i*2+1][j*2] = stateGrids[i][j]
-                realGrids[i*2][j*2+1] = stateGrids[i][j]
-                realGrids[i*2+1][j*2+1] = stateGrids[i][j]
+                        roadType = "IIII"
+                    else:
+                        roadType = roadDict[sideStr]
+                realGrids[i*2][j*2] = roadType[0]
+                realGrids[i*2+1][j*2] = roadType[2]
+                realGrids[i*2][j*2+1] = roadType[1]
+                realGrids[i*2+1][j*2+1] = roadType[3]
 
         for i in range(self.vGrid * 2):
             for j in range(self.hGrid * 2):
-                if realGrids[i][j] == 0:
-                    print "x",
-                elif realGrids[i][j] == 1 or realGrids[i][j] == 2:
-                    print "1",
-                else:
-                    print "C",
-            print ""
+                sys.stdout.write(realGrids[i][j])
+            sys.stdout.write("\n")
 
         self.master.destroy()
 
