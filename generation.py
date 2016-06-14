@@ -30,8 +30,11 @@ class Generation(object):
                 print('\tGene String ' + g.geneStr)
                 self.carmap.updateGeneInfo(GeneInfo(g))
                 simulation = Simulation(self.cars, self.carmap)
-                (total, average) = simulation.run(False)
+                (total, average) = simulation.run(False, 10000)
                 print('\tTotal: ' + str(total) + ' Average: ' + str(average) + '\n')
+                if average == -1:
+                    self.carmap.clearAllCars()
+                    continue
                 result.append((average, g))
             result.sort()
             self.addResults(result[0:self.geneNumber / 2 + 1])

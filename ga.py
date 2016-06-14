@@ -67,7 +67,7 @@ class GeneInfo:
 
 class GeneEvolve:
     @classmethod
-    def evolve(cls, g1, g2, mutateRate=0.1):
+    def evolve(cls, g1, g2, mutateRate=0.3):
         newGen = cls.merge(g1, g2)
         geneStr = cls.mutate(newGen, mutateRate)
         return Gene(g1.trafficInfo, False, geneStr)

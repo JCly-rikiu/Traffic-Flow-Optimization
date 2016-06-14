@@ -40,8 +40,9 @@ class Simulation(object):
         self.carCnt = self.carN
         self.tick = 0
 
-    def run(self, delay, sec=0.1):
+    def run(self, delay, limit, sec=0.1):
         while self.carCnt:
+            if self.tick > limit: return (-1, -1)
             if delay: sleep(sec)
             self.tick += 1
             self.cm.updateTrafficLights(self.tick)
