@@ -9,6 +9,7 @@ from car import CarMap
 from graphic import Graphic
 from simulate import Simulation
 from ga import Gene, GeneInfo
+from generation import Generation
 
 def parseArgs(argv):
     """
@@ -68,16 +69,25 @@ if __name__ == '__main__':
 
     args = parseArgs(sys.argv[1:])
     mapLayout = args['layout']
-    gene = Gene(mapLayout.getTrafficLights())
-    print(gene.geneStr)
-    geneInfo = GeneInfo(gene)
-    carmap = CarMap(mapLayout, geneInfo)
+    carmap = CarMap(mapLayout, None)
     cars = randomStartEndPoint(args['number'])
-    simulation = Simulation(cars, carmap)
-    app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights, args['size'])
-
-    if args['display'] is True:
-        start_new_thread(run, ())
-        app.run()
-    else:
-        run()
+    g = Generation(mapLayout, carmap, cars, 20, 10)
+    results = g.run()
+    for r in results[::2]:
+        (a, s) = r
+        print('{0:.2f}'.format(a) + ' ' + s)
+    print('---------------------------------')
+    for r in results[1::2]:
+        (a, s) = r
+        print('{0:.2f}'.format(a) + ' ' + s)
+    # gene = Gene(mapLayout.getTrafficLights())
+    # print(gene.geneStr)
+    # geneInfo = GeneInfo(gene)
+    # simulation = Simulation(cars, carmap)
+    # app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights, args['size'])
+    #
+    # if args['display'] is True:
+    #     start_new_thread(run, ())
+    #     app.run()
+    # else:
+    #     run()

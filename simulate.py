@@ -51,7 +51,7 @@ class Simulation(object):
         total = 0
         for i in range(self.carN):
             total += self.cars[i].timeStamp
-            print "Car", i, "takes", self.cars[i].timeStamp, "ticks."
+            # print "Car", i, "takes", self.cars[i].timeStamp, "ticks."
         return (total, float(total) / self.carN)
 
     def makeAMove(self, i, nextRoad):

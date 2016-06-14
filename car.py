@@ -182,6 +182,9 @@ class CarMap(object):
         for tl in self.trafficlights:
             tl.update(self.geneInfo.isGreen(tl.number, tick))
 
+    def updateGeneInfo(self, geneInfo):
+        self.geneInfo = geneInfo
+
 if __name__ == '__main__':
     cm = CarMap('face')
     # print(cm.initialCars([(4, 5), (4, 5)]))
