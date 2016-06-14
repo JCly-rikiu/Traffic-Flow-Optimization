@@ -31,9 +31,11 @@ class Graphic():
         self.quitButton.grid(row=0, column=0)
 
         self.carItem = []
-        self.frame1.after(100, self.drawCars)
 
-    def run(self):
+    def run(self, fps=10):
+        self.fps = fps
+        self.frameTime = 1000 / self.fps
+        self.frame1.after(self.frameTime, self.drawCars)
         self.master.mainloop()
 
     def initDataFromInfo(self, graphInfo, data):
@@ -73,7 +75,7 @@ class Graphic():
             pos_y = y * gridsize
             self.carItem.append(self.canvas.create_oval(pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1, fill="#f96"))
 
-        self.frame1.after(100, self.drawCars)
+        self.frame1.after(self.frameTime, self.drawCars)
 
     def quit(self):
         print "Program End!"
