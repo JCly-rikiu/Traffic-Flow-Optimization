@@ -53,6 +53,7 @@ class CarMap(object):
         return True
 
     def clearAllCars(self):
+        self.cars = []
         self.data = [[None for _ in range(r.getDistance())] for r in self.roads]
 
     def getInfo(self, x, y):
