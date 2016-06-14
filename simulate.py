@@ -7,29 +7,18 @@ class Car(object):
     A car in simulation.
     """
 
-    #def __init__(self, start, end):
     def __init__(self, idd, dirs):
-        #self.start = start
-        #self.nowPos = start
-        #self.endPos = endPos
-        #self.id = idd
         self.stepLeft = dirs[0]
         self.dirs = dirs[1]
         self.timeStamp = 0
-        #self.arrived = False
 
     def isArrived(self):
         return self.stepLeft == 0
-        # if self.stepLeft == 0:
-        #     self.arrived = True
-        # else:
-        #     self.arrived = False
-        # return self.stepLeft == 0
 
     def nextRoad(self):
         if self.dirs[0][1] == 1 and self.stepLeft != 1:
-            return self.dirs[0][0] # what if finished
-        return -1 # still on the same road
+            return self.dirs[0][0] # id of next new road
+        return -1 # no need to change road
 
     def move(self):
         self.stepLeft -= 1
@@ -42,22 +31,11 @@ class Simulation(object):
 
     def __init__(self, startEndList, layout):
         self.carN = len(startEndList)
-
-        #cars = [Car(startEndList[i][0], startEndList[i][1]) for i in range(carCnt)]
         self.cm = CarMap(layout)
-        #cm.initialCars([cars[i].nowPos for i in range(carCnt)])
         self.cm.initialCars([startEndList[i][0] for i in range(self.carN)])
-        #cm.initialCars([(2, 3), (3, 3)])
         self.cars = []
         for i in range(self.carN):
-            #if cars[i].nowPos == cars.
-            #cars[] = Car(i, cm.getDirection(startEndList[i][0], startEndList[i][1]))
-            #if not car.isArrived()
-            #    cars[i] = car
             self.cars.append(Car(i, self.cm.getDirection(startEndList[i][0], startEndList[i][1])))
-        # for i in range(len(cars)):
-        #     if cars[i].isArrived:
-                    #del cars[i]
         self.carCnt = self.carN
         self.tick = 0
 
@@ -65,16 +43,10 @@ class Simulation(object):
         while self.carCnt:
             self.tick += 1
             for i in range(self.carN):
-                # if self.cars[i].isArrived() or self.cars[i].timeStamp == self.tick:
-                #     continue
-                #     cm.remove(i)
                 self.moveCarRecursively(i)
-
         self.cm.clearAllCars()
         for i in range(self.carN):
             print "Car", i, "takes", self.cars[i].timeStamp, "ticks."
-        #print(cm.getDirection((4, 4), (8, 4)))
-
 
     def makeAMove(self, i, nextRoad):
         if nextRoad == -1:
@@ -97,4 +69,4 @@ class Simulation(object):
                 self.carCnt -= 1
 
 if __name__ == '__main__':
-    Simulation([((2, 3), (3, 3)), ((4, 5), (4, 4))], 'test').run()
+    Simulation([((7, 4), (10, 4))], 'face').run()
