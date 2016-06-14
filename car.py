@@ -1,5 +1,6 @@
 # car.py
 
+import Queue
 from layout import getLayout
 from game import Info
 
@@ -30,10 +31,12 @@ class CarMap(object):
     def __init__(self, mapLayout):
         if type(mapLayout) == str:
             mapLayout = getLayout(mapLayout)
-        self.mapLayout = mapLayout
         self.mapInfo = mapLayout.mapInfo
+        self.intersections = mapLayout.intersections
+        self.crossroads = mapLayout.crossroads
         self.roads = mapLayout.roads
         self.cars = []
+        # self.trafficlight = TrafficLight
         self.data = [[None for _ in range(r.getDistance())] for r in self.roads]
 
     def initialCars(self, cars):
@@ -59,6 +62,53 @@ class CarMap(object):
         index = self.roads[info[1]].getIndexOfRoad((x, y))
         return (info[1], index)
 
+    def getDirection(self, start, end):
+        (startRoad, si) = self.getRoadIndex(start[0], start[1])
+        (endRoad, ei) = self.getRoadIndex(end[0], end[1])
+
+        distance = 0
+        sameway = True if startRoad == endRoad and si > ei else False
+
+        prev = {}
+        pq = Queue.PriorityQueue()
+        pq.put((0, startRoad))
+        twice = sameway
+        while not pq.empty():
+            (dist, number) = pq.get()
+            if number == endRoad:
+                if twice:
+                    twice = False
+                else:
+                    distance = dist
+                    break
+            road = self.roads[number]
+            dist += road.getDistance()
+            (nodeType, nodeNum) = road.getEnd()
+            if nodeType == Info.INTERSECTION:
+                node = self.intersections[nodeNum]
+            elif nodeType == Info.CROSSROAD:
+                node = self.crossroads[nodeNum]
+            for rn in node.getOutRoads():
+                if rn not in prev:
+                    prev[rn] = number
+                    pq.put((dist, rn))
+
+        now = endRoad
+        direction = [now]
+        twice = sameway
+        while True:
+            if now == startRoad:
+                if twice:
+                    twice = False
+                else:
+                    break
+            now = prev[now]
+            direction.append(now)
+
+        direction.reverse()
+        print(si, ei, distance)
+        return (distance + ei - si, direction)
+
     def move(self, number):
         car = self.cars[number]
         (r, i) = car.roadIndex
@@ -75,13 +125,15 @@ class CarMap(object):
         car.draw()
         return (self.SUCCESS, pos)
 
-    def moveTo(self, number, roadNumber):
+    def moveTo(self, number, roadNumber, tick):
         car = self.cars[number]
         (r, i) = car.roadIndex
         road = self.roads[r]
         if road.getDistance() != i + 1:
             return (self.NOT_AT_THE_END_OF_ROAD)
         # TODO Traffic light
+        #
+        #   return (self.BLOCKED_BY_TRAFFIC_LIGHT)
         if self.data[roadNumber][0] is not None:
             return (self.BLOCKED_BY_OTHER_CAR, self.data[r][i + 1].number)
         pos = self.roads[roadNumber].getPosByIndex(0)
@@ -95,6 +147,4 @@ class CarMap(object):
 if __name__ == '__main__':
     cm = CarMap('test')
     cm.initialCars([(2, 3), (3, 3)])
-    print(cm.cars[0].number)
-    print(cm.cars[0].pos)
-    print(cm.move(0))
+    print(cm.getDirection((4, 4), (8, 4)))
