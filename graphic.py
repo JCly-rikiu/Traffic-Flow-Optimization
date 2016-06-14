@@ -43,11 +43,11 @@ class Graphic():
         for x in range(graphInfo.width):
             for y in range(graphInfo.height):
                 dataType = graphInfo.data[x][y][0]
-                if dataType == Info.FIELD or dataType == Info.CROSSROAD:
+                if dataType == Info.FIELD:
                     data[x][y] = 0
                 elif dataType == Info.INTERSECTION:
                     data[x][y] = 2
-                elif dataType == Info.ROAD:
+                elif dataType == Info.ROAD or dataType == Info.CROSSROAD:
                     data[x][y] = 1
 
     def drawRoadAndBuilding(self, data, wid, hei):
