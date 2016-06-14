@@ -45,7 +45,7 @@ class CarMap(object):
             roadIndex = self.getRoadIndex(x, y)
             if roadIndex is None: return False
             (r, i) = roadIndex
-            if self.data[r][i] is not None: return False
+            if self.data[r][i] is not None: raise Exception('Position ' + str((x, y)) + ' has been occupied.')
             number = len(self.cars)
             car = Car(number, c, (r, i))
             self.data[r][i] = car
@@ -156,5 +156,5 @@ class CarMap(object):
 
 if __name__ == '__main__':
     cm = CarMap('face')
-    # print(cm.initialCars([(4, 5), (21, 19)]))
+    print(cm.initialCars([(4, 5), (4, 5)]))
     print(cm.getDirection((4, 5), (21, 19)))
