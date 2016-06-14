@@ -76,7 +76,8 @@ class Graphic():
             colorToDraw = "#f00"
             if light.isGreen:
                 colorToDraw = "#0c0"
-            self.graphicItem.append(self.canvas.create_rectangle(pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1, fill=colorToDraw))
+            coords = [pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1]
+            self.graphicItem.append(self.canvas.create_rectangle(coords, fill=colorToDraw))
 
         for car in self.cars:
             if car.display == False:
@@ -84,7 +85,16 @@ class Graphic():
             x, y = car.pos
             pos_x = x * gridsize
             pos_y = y * gridsize
-            self.graphicItem.append(self.canvas.create_oval(pos_x+2, pos_y+2, pos_x+gridsize-2, pos_y+gridsize-2, fill="#f96"))
+
+            if car.way == "N":
+                coords = [pos_x+gridsize/2, pos_y+2, pos_x+2, pos_y+gridsize-2, pos_x+gridsize/2, pos_y+2+gridsize/2, pos_x+gridsize-2, pos_y+gridsize-2]
+            elif car.way == "W":
+                coords = [pos_x+2, pos_y+gridsize/2, pos_x+gridsize-2, pos_y+gridsize-2, pos_x+2+gridsize/2, pos_y+gridsize/2, pos_x+gridsize-2, pos_y+2]
+            elif car.way == "S":
+                coords = [pos_x+gridsize/2, pos_y+gridsize-2, pos_x+gridsize-2, pos_y+2, pos_x+gridsize/2, pos_y-2+gridsize/2, pos_x+2, pos_y+2]
+            else:
+                coords = [pos_x+gridsize-2, pos_y+gridsize/2, pos_x+2, pos_y+2, pos_x-2+gridsize/2, pos_y+gridsize/2, pos_x+2, pos_y+gridsize-2]
+            self.graphicItem.append(self.canvas.create_polygon(coords, fill="#f96"))
 
         self.frame1.after(self.frameTime, self.updateElement)
 
