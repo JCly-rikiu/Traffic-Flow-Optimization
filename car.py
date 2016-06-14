@@ -146,6 +146,11 @@ class CarMap(object):
         car.draw()
         return (self.SUCCESS, pos)
 
+    def remove(self, number):
+        car = self.cars[number]
+        (r, i) = car.roadIndex
+        self.data[r][i] = None
+
 if __name__ == '__main__':
     cm = CarMap('test')
     cm.initialCars([(2, 3), (3, 3)])
