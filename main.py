@@ -27,6 +27,7 @@ def parseArgs(argv):
     parser.add_option('-s', '--save', dest='save', type='str', default='save.p')
     parser.add_option('-r', '--load', dest='load', type='str', default='')
     parser.add_option('--no_display', action='store_false', dest='display', default=True)
+    parser.add_option('--no_simulate', action='store_false', dest='simulate', default=True)
 
     (options, otherjunk) = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -39,6 +40,7 @@ def parseArgs(argv):
     if arguments['layout'] is None: raise Exception('The layout ' + options.layout + " can't be found.")
 
     arguments['display'] = options.display
+    arguments['simulate'] = options.simulate
     arguments['number'] = options.number
     arguments['size'] = options.size
     arguments['delay'] = options.delay
@@ -61,7 +63,7 @@ def load(filename):
     return pickle.load(open('saved/' + filename, 'rb'))
 
 def run():
-    print(simulation.run(args['display'], args['delay']))
+    print(simulation.run(args['display'], 100000, args['delay']))
 
 def randomStartEndPoint(number=5):
     pos = {}
@@ -90,24 +92,48 @@ if __name__ == '__main__':
     args = parseArgs(sys.argv[1:])
 
     if args['load'] == '':
-        mapLayout = args['layout']
-        carmap = CarMap(mapLayout, None)
-        cars = randomStartEndPoint(args['number'])
-        g = Generation(mapLayout, carmap, cars, args['amount'], args['generation'])
-        results = g.run()
-        for r in results[::2]:
-            (a, s) = r
-            print('{0:.2f}'.format(a) + ' ' + s)
-        print('---------------------------------')
-        for r in results[1::2]:
-            (a, s) = r
-            print('{0:.2f}'.format(a) + ' ' + s)
 
-        save(Result(args['layoutName'], cars), args['save'])
+        if args['simulate'] is True:
+            mapLayout = args['layout']
+            carmap = CarMap(mapLayout, None)
+            cars = randomStartEndPoint(args['number'])
+            g = Generation(mapLayout, carmap, cars, args['amount'], args['generation'])
+            results = g.run()
+
+            print "Best in each generation:\n"
+            counter = 0
+            for r in results[::2]:
+                counter += 1
+                (a, s) = r
+                print('[' + str(counter) + '] ' + '{0:.2f}'.format(a) + ' ' + s)
+
+            print('\n-----------------------------------------------------------\n')
+
+            print "Middle in each generation:\n"
+            counter = 0
+            for r in results[1::2]:
+                counter += 1
+                (a, s) = r
+                print('[' + str(counter) + '] ' + '{0:.2f}'.format(a) + ' ' + s)
+
+            save(Result(args['layoutName'], cars), args['save'])
+        else:
+            mapLayout = args['layout']
+            gene = Gene(mapLayout.getTrafficLights())
+            geneInfo = GeneInfo(gene)
+            carmap = CarMap(mapLayout, geneInfo)
+            cars = randomStartEndPoint(args['number'])
+            carmap = CarMap(mapLayout, geneInfo)
+            simulation = Simulation(cars, carmap)
+
+            app = Graphic(mapLayout.mapInfo, carmap.cars, carmap.trafficlights, args['size'])
+            start_new_thread(run, ())
+            app.run()
+
     else:
         r = load(args['load'])
         mapLayout = getLayout(r.layout)
-        geneStr = raw_input('Input Gene String:')
+        geneStr = raw_input('Input Gene String: ')
         gene = Gene(mapLayout.getTrafficLights(), False, geneStr)
         geneInfo = GeneInfo(gene)
         carmap = CarMap(mapLayout, geneInfo)
