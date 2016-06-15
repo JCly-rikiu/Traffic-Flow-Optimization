@@ -36,6 +36,8 @@ class Graphic():
 
         self.isStop = False
         self.graphicItem = []
+        self.graphicItemShadow = []
+        self.graphicItemShadow2 = []
 
     def run(self, fps=10):
         self.fps = fps
@@ -49,9 +51,11 @@ class Graphic():
                 dataType = graphInfo.data[x][y][0]
                 if dataType == Info.FIELD:
                     data[x][y] = 0
+                elif dataType == Info.CROSSROAD:
+                    data[x][y] = 3
                 elif dataType == Info.INTERSECTION:
                     data[x][y] = 2
-                elif dataType == Info.ROAD or dataType == Info.CROSSROAD:
+                elif dataType == Info.ROAD:
                     data[x][y] = 1
 
     def drawRoadAndBuilding(self, data, wid, hei):
@@ -63,14 +67,22 @@ class Graphic():
                 if data[x][y] == 0:
                     self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#eee", width=0)
                 elif data[x][y] == 2:
-                    self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#393", width=0)
+                    self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#333", width=0)
+                    self.canvas.create_line(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#b93")
+                    self.canvas.create_line(pos_x+gridsize, pos_y, pos_x, pos_y+gridsize, fill="#b93")
+                elif data[x][y] == 3:
+                    self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#222", width=0)
                 else:
                     self.canvas.create_rectangle(pos_x, pos_y, pos_x+gridsize, pos_y+gridsize, fill="#333", width=0)
 
     def updateElement(self):
         gridsize = self.gridSize
-        for item in self.graphicItem:
+        
+        for item in self.graphicItemShadow2:
             self.canvas.delete(item)
+
+        self.graphicItemShadow2 = self.graphicItemShadow
+        self.graphicItemShadow = self.graphicItem
         self.graphicItem = []
 
         for light in self.trafficlights:
@@ -82,6 +94,12 @@ class Graphic():
                 colorToDraw = "#0c0"
             coords = [pos_x+1, pos_y+1, pos_x+gridsize-1, pos_y+gridsize-1]
             self.graphicItem.append(self.canvas.create_rectangle(coords, fill=colorToDraw))
+
+        for item in self.graphicItemShadow2:
+            self.canvas.itemconfig(item, fill="#433")
+
+        for item in self.graphicItemShadow:
+            self.canvas.itemconfig(item, fill="#543")
 
         for car in self.cars:
             if car.display == False:
