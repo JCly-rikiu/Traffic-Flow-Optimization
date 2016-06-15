@@ -76,4 +76,4 @@ class Simulation(object):
                 self.carCnt -= 1
 
 if __name__ == '__main__':
-    Simulation([((7, 4), (10, 4))], 'face').run()
+    Simulation([((7, 4), (10, 4))], CarMap('face')).run()
