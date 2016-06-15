@@ -28,9 +28,13 @@ class Graphic():
         self.initDataFromInfo(graphInfo, data)
         self.drawRoadAndBuilding(data, wid, hei)
 
-        self.quitButton = Button(self.frame2, text="Quit", command=self.quit)
-        self.quitButton.grid(row=0, column=0)
+        self.stopButton = Button(self.frame2, text="Stop/Play", command=self.stopOrContinue)
+        self.stopButton.grid(row=0, column=0)
 
+        self.quitButton = Button(self.frame2, text="Quit", command=self.quit)
+        self.quitButton.grid(row=0, column=1)
+
+        self.isStop = False
         self.graphicItem = []
 
     def run(self, fps=10):
@@ -96,7 +100,15 @@ class Graphic():
                 coords = [pos_x+gridsize-2, pos_y+gridsize/2, pos_x+2, pos_y+2, pos_x-2+gridsize/2, pos_y+gridsize/2, pos_x+2, pos_y+gridsize-2]
             self.graphicItem.append(self.canvas.create_polygon(coords, fill="#f96"))
 
-        self.frame1.after(self.frameTime, self.updateElement)
+        if self.isStop is False:
+            self.frame1.after(self.frameTime, self.updateElement)
+
+    def stopOrContinue(self):
+        if self.isStop:
+            self.isStop = False
+            self.frame1.after(self.frameTime, self.updateElement)
+        else:
+            self.isStop = True
 
     def quit(self):
         print "Program End!"
