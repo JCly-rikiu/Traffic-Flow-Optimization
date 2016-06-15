@@ -39,7 +39,7 @@ class Graphic():
         self.graphicItemShadow = []
         self.graphicItemShadow2 = []
 
-    def run(self, fps=10):
+    def run(self, fps=20):
         self.fps = fps
         self.frameTime = 1000 / self.fps
         self.frame1.after(self.frameTime, self.updateElement)

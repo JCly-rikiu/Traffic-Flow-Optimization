@@ -21,7 +21,7 @@ class Gene:
             self.geneLen += len(intersections)
             lightlist = []
             for _ in range(len(intersections)):
-                duration = randint(2, 10)
+                duration = randint(2, 20)
                 lightlist.append(duration)
                 self.geneStr += "{0:02d}".format(duration)
 
@@ -67,7 +67,7 @@ class GeneInfo:
 
 class GeneEvolve:
     @classmethod
-    def evolve(cls, g1, g2, mutateRate=0.3):
+    def evolve(cls, g1, g2, mutateRate=0.2):
         newGen = cls.merge(g1, g2)
         geneStr = cls.mutate(newGen, mutateRate)
         return Gene(g1.trafficInfo, False, geneStr)
@@ -85,5 +85,5 @@ class GeneEvolve:
     def mutate(cls, geneStr, mutateRate):
         for i in range(randint(0, int(len(geneStr)/2 * mutateRate) )):
             pos = randint(0, len(geneStr)/2 - 1)
-            geneStr = geneStr[: pos*2] + "{0:02d}".format(randint(2,10)) + geneStr[pos*2+2 :]
+            geneStr = geneStr[: pos*2] + "{0:02d}".format(randint(2,20)) + geneStr[pos*2+2 :]
         return geneStr
